@@ -3,9 +3,9 @@ import axios from 'axios';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import PaymentPage from './PaymentPage'; 
-import './MyBookings.css'
+import './MyBookings.css';
 
-const stripePromise = loadStripe('pk_test_51QJIbLFFxitBtFz7XBQODYdS2xQnO6UJKwLk2cHaaELqF4Ry9lVH3y9dHPsfS4ThzuIRpIGyK6Qw0LplfDtydKFP00oRXe2ynx');  
+const stripePromise = loadStripe('pk_test_51QJIbLFFxitBtFz7XBQODYdS2xQnO6UJKwLk2cHaaELqF4Ry9lVH3y9dHPsfS4ThzuIRpIGyK6Qw0LplfDtydKFP00oRXe2ynx');
 
 const MyBookings = () => {
     const [loans, setLoans] = useState([]);
@@ -17,7 +17,7 @@ const MyBookings = () => {
     const userId = localStorage.getItem('user_id');
 
     useEffect(() => {
-        fetchLoans(); 
+        fetchLoans();
     }, []);
 
     const fetchLoans = () => {
@@ -37,15 +37,15 @@ const MyBookings = () => {
         if (fine > 0) {
             axios.post(`http://localhost:8000/api/loans/return/`, { loan_id: loanId })
                 .then(async (response) => {
-                    setClientSecret(response.data.client_secret);  
-                    setCurrentLoanId(loanId);  
+                    setClientSecret(response.data.client_secret);
+                    setCurrentLoanId(loanId);
                 })
                 .catch(error => {
                     console.error('Error with payment initiation:', error);
                     alert('Payment initiation failed, please try again.');
                 });
         } else {
-            confirmReturn(loanId, true); 
+            confirmReturn(loanId, true);
         }
     };
 
@@ -53,8 +53,8 @@ const MyBookings = () => {
         axios.post(`http://localhost:8000/api/loans/confirm_return/`, { loan_id: loanId, payment_successful: paymentSuccessful })
             .then(() => {
                 alert('Book returned successfully!');
-                fetchLoans();  
-                setClientSecret(''); 
+                fetchLoans();
+                setClientSecret('');
                 setCurrentLoanId(null);
             })
             .catch(error => {
@@ -64,13 +64,17 @@ const MyBookings = () => {
     };
 
     const handlePaymentSuccess = () => {
-        confirmReturn(currentLoanId, true); 
+        confirmReturn(currentLoanId, true);
     };
 
     const handleCancelPayment = () => {
-        setClientSecret('');  
-        setCurrentLoanId(null);  
+        setClientSecret('');
+        setCurrentLoanId(null);
     };
+
+    const sortedLoans = [...loans].sort((a, b) => {
+        return a.status === 'Borrowed' ? -1 : 1;
+    });
 
     if (loading) return <p>Loading your bookings...</p>;
     if (error) return <p>{error}</p>;
@@ -88,7 +92,7 @@ const MyBookings = () => {
                 />
             ) : (
                 <>
-                    {loans.length === 0 ? (
+                    {sortedLoans.length === 0 ? (
                         <p>You have no active bookings.</p>
                     ) : (
                         <table className="my-bookings-table">
@@ -104,7 +108,7 @@ const MyBookings = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {loans.map((loan) => (
+                                {sortedLoans.map((loan) => (
                                     <tr key={loan.loan_id}>
                                         <td>{loan.book_title || 'Unknown Title'}</td>
                                         <td>{loan.book_category || 'Unknown Category'}</td>

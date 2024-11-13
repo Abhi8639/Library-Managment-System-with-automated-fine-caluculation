@@ -11,6 +11,7 @@ import Reservations from './reservations';
 import MyReservations from './MyReservations';
 import BookTable from './BookTable';
 import ReturnedBookings from './ReturnedBookings';
+import FineAnalysis from './FineAnalysis';
 
 function App() {
     return (
@@ -27,6 +28,7 @@ function App() {
                     <Route path="/register" element={<Register />} />
                     <Route path="/booktable" element={<BookTable />} />
                     <Route path="/returnedbookings" element={<ReturnedBookings />} />
+                    <Route path="/fineanalysis" element={<FineAnalysis />} />
                 </Routes>
             </div>
         </Router>

@@ -8,4 +8,5 @@ urlpatterns = [
     path('confirm_return/', LoanViewSet.as_view({'post': 'confirm_return'})),
     path('all_loans/', LoanViewSet.as_view({'get': 'list_all_loans'})),
     path('returned_loans/', LoanViewSet.as_view({'get': 'list_returned_loans'})),
+    path('fine_analysis/', LoanViewSet.as_view({'get': 'fine_analysis'})),
 ]

@@ -44,7 +44,10 @@ const Navbar = () => {
                              <li><Link to="/booktable">Manage Books</Link></li>
  
                         )}
-
+{userRole === 'Admin' && (
+                             <li><Link to="/fineanalysis">Fine</Link></li>
+ 
+                        )}
                         <li><button className="logout-button" onClick={handleLogout}>Logout</button></li>
                     </>
                 ) : (

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './reservations.css';
-
+import './allreservations.css';
 
 const Reservations = () => {
     const [reservations, setReservations] = useState([]);
+    const [books, setBooks] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -17,9 +17,22 @@ const Reservations = () => {
             try {
                 const response = await axios.get(`http://localhost:8000/api/reservations/my_reservations/${userIdForApi}/`);
                 setReservations(response.data);
+
+                const bookIds = response.data.map(reservation => reservation.book_id);
+                const bookResponses = await Promise.all(
+                    bookIds.map(bookId => axios.get(`http://localhost:8000/api/books/${bookId}/`))
+                );
+
+                const booksData = {};
+                bookResponses.forEach(bookResponse => {
+                    const book = bookResponse.data;
+                    booksData[book.book_id] = book;
+                });
+                setBooks(booksData);
+
                 setLoading(false);
             } catch (err) {
-                setError('There was an error fetching your reservations');
+                setError('There was an error fetching reservations');
                 setLoading(false);
             }
         };
@@ -43,19 +56,47 @@ const Reservations = () => {
             });
     };
 
-    if (loading) return <p>Loading your reservations...</p>;
+    const handleBookLoan = (bookId, reservationId) => {
+        const loanData = { user_id: userId, book_id: bookId };
+
+        axios.post('http://localhost:8000/api/loans/add/', loanData, { withCredentials: true })
+        .then(response => {
+            alert('Book successfully loaned!');
+            axios.post(`http://localhost:8000/api/reservations/loan/${reservationId}/`, { withCredentials: true })
+                .then(() => {
+                    setReservations(reservations.map(res => 
+                        res.reservation_id === reservationId ? { ...res, status: 'Loaned' } : res
+                    ));
+                })
+                .catch(error => {
+                    console.error('Error updating reservation to Loaned in the database:', error);
+                });
+        })
+        .catch(error => {
+            console.error('Error during loan creation:', error);
+            alert('An error occurred while attempting to book the loan.');
+        });
+    };
+
+    const statusOrder = { 'Pending': 1, 'Loaned': 2, 'Cancelled': 3 };
+
+    const sortedReservations = [...reservations].sort((a, b) => {
+        return statusOrder[a.status] - statusOrder[b.status];
+    });
+
+    if (loading) return <p>Loading reservations...</p>;
     if (error) return <p>{error}</p>;
 
     return (
-        <div className="my-reservations-container">
+        <div className="reservations-container">
             <h1>All Reservations</h1>
-            {reservations.length === 0 ? (
-                <p>You have no active reservations.</p>
+            {sortedReservations.length === 0 ? (
+                <p>No active reservations.</p>
             ) : (
-                <table className="my-reservations-table">
+                <table className="reservations-table">
                     <thead>
                         <tr>
-                        <th>User Name</th>
+                            <th>User Name</th>
                             <th>Title</th>
                             <th>Category</th>
                             <th>Reservation Date</th>
@@ -64,22 +105,45 @@ const Reservations = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {reservations.map((reservation) => (
-                            <tr key={reservation.reservation_id}>
-                                                                <td>{reservation.user_name}</td>
-                                <td>{reservation.book_title || 'Unknown Title'}</td> 
-                                <td>{reservation.book_category || 'Unknown Category'}</td>
-                                <td>{reservation.reservation_date}</td>
-                                <td>{reservation.status}</td>
-                                <td>
-                                    {reservation.status === 'Pending' && (
-                                        <button onClick={() => handleCancelReservation(reservation.reservation_id)}>
-                                            Cancel
-                                        </button>
-                                    )}
-                                </td>
-                            </tr>
-                        ))}
+                        {sortedReservations.map((reservation) => {
+                            const book = books[reservation.book_id];
+                            const availableCopies = book ? book.available_copies : 0;
+                            
+                            return (
+                                <tr key={reservation.reservation_id}>
+                                    <td>{reservation.user_name || 'Unknown User'}</td>
+                                    <td>{reservation.book_title || 'Unknown Title'}</td>
+                                    <td>{reservation.book_category || 'Unknown Category'}</td>
+                                    <td>{reservation.reservation_date}</td>
+                                    <td>{reservation.status}</td>
+                                    <td>
+                                        {reservation.status === 'Pending' && (
+                                            <>
+                                                <button 
+                                                    onClick={() => handleBookLoan(reservation.book_id, reservation.reservation_id)}
+                                                    disabled={availableCopies <= 0}
+                                                    className="book-btn"
+                                                >
+                                                    Book
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleCancelReservation(reservation.reservation_id)}
+                                                    className="cancel-btn"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </>
+                                        )}
+                                        {reservation.status === 'Loaned' && (
+                                            <span>Loaned</span>
+                                        )}
+                                        {reservation.status === 'Cancelled' && (
+                                            <span>Cancelled</span>
+                                        )}
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             )}

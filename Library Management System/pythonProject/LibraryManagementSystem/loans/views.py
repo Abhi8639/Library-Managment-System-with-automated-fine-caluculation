@@ -11,7 +11,8 @@ from books.models import Book
 import stripe
 from django.conf import settings
 from rest_framework.decorators import action
-
+from rest_framework.decorators import action
+from django.db.models import Sum
 
 stripe.api_key = "sk_test_51QJIbLFFxitBtFz7F9UNigYKQNFHVihiILqdQC9YINQ18CcuLiUWrC5WnEPgIpnvt77geca2I7PiDPRc9moniMD800ETytKXNL"
 
@@ -61,21 +62,19 @@ class LoanViewSet(viewsets.ViewSet):
         if user_id == 0:
             loans = Loan.objects.filter(status='Borrowed')
         else:
-            loans = Loan.objects.filter(user_id=user_id, status='Borrowed')
+            loans = Loan.objects.filter(user_id=user_id)
 
         serializer = LoanSerializer(loans, many=True)
         return Response(serializer.data)
 
     @action(detail=False, methods=['get'], url_path='returned_loans')
     def list_returned_loans(self, request, *args, **kwargs):
-        """Returns all loans for all users with a status of 'Returned'."""
         loans = Loan.objects.filter(status='Returned')
         serializer = LoanSerializer(loans, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['get'], url_path='all_loans')
     def list_all_loans(self, request, *args, **kwargs):
-        """Returns all loans for all users."""
         loans = Loan.objects.filter(status='Borrowed')
         serializer = LoanSerializer(loans, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -136,3 +135,16 @@ class LoanViewSet(viewsets.ViewSet):
 
         serializer = LoanSerializer(loan)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'], url_path='fine_analysis')
+    def fine_analysis(self, request, *args, **kwargs):
+        pending_fines = Loan.objects.filter(status='Borrowed', fine__gt=0).aggregate(total_pending=Sum('fine'))[
+                            'total_pending'] or 0
+
+        collected_fines = Loan.objects.filter(status='Returned', fine__gt=0).aggregate(total_collected=Sum('fine'))[
+                              'total_collected'] or 0
+
+        return Response({
+            "pending_fines": pending_fines,
+            "collected_fines": collected_fines
+        }, status=status.HTTP_200_OK)

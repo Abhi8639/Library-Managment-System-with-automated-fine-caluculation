@@ -28,7 +28,13 @@ class BookViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
+        try:
+            response = super().update(request, *args, **kwargs)
+            return response
+        except Exception as e:
+            print("Error during update:", e)
+            return Response({"error": "An error occurred during update"},
+                            status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
         print("Destroy method called for book ID:", kwargs.get('pk'))

@@ -1,0 +1,53 @@
+
+
+.fine-analysis-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f4f6f9;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+.fine-analysis-container h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #444;
+    margin-bottom: 20px;
+}
+
+.chart-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    width: 80%;
+    max-width: 600px;
+}
+
+.pie-chart, .bar-chart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chart-title {
+    font-size: 18px;
+    color: #666;
+    margin-top: 15px;
+    text-align: center;
+}
+
+.pie-chart .chart-title, .bar-chart .chart-title {
+    margin-bottom: 15px;
+    font-weight: bold;
+    color: #444;
+}
+
+@media (max-width: 768px) {
+    .chart-container {
+        width: 100%;
+    }
+}
