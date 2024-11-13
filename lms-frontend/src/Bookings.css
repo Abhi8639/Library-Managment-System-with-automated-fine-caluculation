@@ -1,0 +1,125 @@
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7f9;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.bookings-container {
+    max-width: 1000px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    font-size: 24px;
+    color: #2d3a4b;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+p {
+    font-size: 18px;
+    color: #666;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.bookings-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+.bookings-table th,
+.bookings-table td {
+    padding: 12px 15px;
+    text-align: left;
+}
+
+.bookings-table th {
+    background-color: #2d3a4b;
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.bookings-table tr:nth-child(even) {
+    background-color: #f4f7f9;
+}
+
+.bookings-table tr:nth-child(odd) {
+    background-color: #fff;
+}
+
+.bookings-table td {
+    color: #4a4a4a;
+}
+
+.bookings-table td button {
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #1a73e8;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.bookings-table td button:hover {
+    background-color: #155a9a;
+}
+
+.payment-page {
+    text-align: center;
+    padding: 20px;
+}
+
+.payment-page h2 {
+    color: #2d3a4b;
+    margin-bottom: 20px;
+}
+
+.payment-page form {
+    display: inline-block;
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+    background-color: #f4f7f9;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.payment-page button {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #1a73e8;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 15px;
+}
+
+.payment-page button:hover {
+    background-color: #155a9a;
+}
+
+.payment-page .cancel-btn {
+    background-color: #e75151;
+}
+
+.payment-page .cancel-btn:hover {
+    background-color: #c0392b;
+}
