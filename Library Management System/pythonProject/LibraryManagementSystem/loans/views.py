@@ -14,7 +14,7 @@ from rest_framework.decorators import action
 from rest_framework.decorators import action
 from django.db.models import Sum
 
-stripe.api_key = "sk_test_51QJIbLFFxitBtFz7F9UNigYKQNFHVihiILqdQC9YINQ18CcuLiUWrC5WnEPgIpnvt77geca2I7PiDPRc9moniMD800ETytKXNL"
+stripe.api_key = ""
 
 class LoanViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
